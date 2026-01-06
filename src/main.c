@@ -12,15 +12,6 @@
 
 static const char* usage="c0defeed [-b buildconfig.json | -t buildfromtiles.json | -s serverconfig.json]\nOptions are mutually exclusive\n";
 
-/*
-static int write_file(const char* name,const void* d,size_t z)
-{
-  FILE* f=fopen(name,"w");
-  fwrite(d,z,1,f);
-  fclose(f);
-  return 0;
-}
-*/
 
 int main(int ac,char** av)
 {

@@ -27,40 +27,6 @@
 
 #define DB_SEED		0xdeadc0deU
 
-/*
-Content-Type: application/vnd.mapbox-vector-tile
-Content-Encoding: gzip
-
-y = (2^z - 1) - tile_row
-
-
-Cache-Control: public, max-age=86400
-Last-Modified: Wed, 03 Dec 2025 00:00:00 GMT
-Access-Control-Allow-Origin: *
-
--------
-1. Content-Length
-
-Длина gzipped тела. У разных тайлов разная, это прям часть твоего index/tiles.dat.
-
-2. ETag
-
-Как обсуждали:
-
-либо глобальный ETag по версии tileset’а (просто строка, одинаковая для всех),
-
-либо (лучше) хэш тайла.
-
-Для B-варианта:
-
-при дедупе храним xxhash64 сырых или gzipped байтов;
-
-ETag = "mvt-" + hex(hash).
-
-3. Может быть, какие-то кастомные заголовки
-
-
-*/
 
 typedef struct db_header_t
 {
@@ -542,17 +508,6 @@ static int sqcb(void *data, int argc, char **argv, char **azColName)
   return 0;
 }
 
-
-/*
-sqlite> select count(*) from tiles_shallow;
-1152782
-sqlite> select count(*) from tiles_data;
-381501
-select sum(length(tile_data)) from tiles_data;
-3370982506
-
-*/
-
 //! return error string
 int db_build_tiles(const cfg_build_t* c)
 {
@@ -708,25 +663,20 @@ int db_build_tiles(const cfg_build_t* c)
 
   size_t off=0;
   size_t noff=0;
-//  size_t final=0;
 
   {
     char path[1024];
     char hx[hsz+512];
     sqlite3_prepare_v2(db,
       "select tiles_shallow.tile_data_id as id,tiles_shallow.zoom_level as zoom_level,tiles_shallow.tile_column as tile_column,tiles_shallow.tile_row as tile_row, tiles_data.tile_data as tile_data "
-//      ", length(tile_data),length(length(tile_data)) "
       "from tiles_shallow join tiles_data on tiles_shallow.tile_data_id = tiles_data.tile_data_id order by id;",
        -1, &stmt,0);
 
     size_t last=0;
     size_t next=0;
-//    size_t cnt=0;
+
     while(sqlite3_step(stmt) != SQLITE_DONE)
     {
-
-
-//      const unsigned char* sid=sqlite3_column_text(stmt, 0);
       uint64_t id=sqlite3_column_int(stmt, 0);
       uint64_t zoom=sqlite3_column_int(stmt, 1);
       uint64_t col=sqlite3_column_int(stmt, 2);
