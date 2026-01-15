@@ -1,0 +1,7 @@
+{
+  "db":"./db",
+  "parts": 1,
+  "type": "mbtiles",
+  "src": "./data/planet_z15.mbtiles",
+  "dedup": true
+}

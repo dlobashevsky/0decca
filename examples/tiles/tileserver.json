@@ -1,0 +1,28 @@
+{
+  "db":"./db",
+  "threads": 16,
+  "port":0,
+  "socket":"/tmp/.tiles.sock",
+  "backlog":1024,
+  "inbuffer":2048,
+  "headers":
+  [
+    "Content-Type: application/vnd.mapbox-vector-tile",
+    "Content-Encoding: gzip",
+    "Server: vikia/0.1",
+    "Connection: close"
+  ],
+  "h404":
+  [
+    "Server: vikia/0.1",
+    "Connection: close",
+    "Content-Length: 0"
+  ],
+  "log":
+  {
+    "request":false,
+    "facility":"daemon",
+    "id":"c0defeed"
+  },
+  "timeout":10000
+}
