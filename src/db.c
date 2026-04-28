@@ -338,11 +338,11 @@ int db_build(const cfg_build_t* c)
     strcpy(arena+n,bf);
     n+=strlen(bf)+1;
   }
-$$
+
   cmph_io_adapter_t *source=cmph_io_vector_adapter(pidx,items);
   cmph_config_t *config = cmph_config_new(source);
   cmph_config_set_algo(config,PHASH_ALGO);
-$$
+
   cmph_t* hash = cmph_new(config);
   cmph_config_destroy(config);
   cmph_io_vector_adapter_destroy(source);
@@ -665,6 +665,8 @@ int db_build_tiles(const cfg_build_t* c)
   size_t noff=0;
 
   {
+    sqlite3_stmt *stmt;
+
     char path[1024];
     char hx[hsz+512];
     sqlite3_prepare_v2(db,
@@ -674,9 +676,11 @@ int db_build_tiles(const cfg_build_t* c)
 
     size_t last=0;
     size_t next=0;
-
-    while(sqlite3_step(stmt) != SQLITE_DONE)
+    int res=0;
+    while((res = sqlite3_step(stmt)) != SQLITE_DONE)
     {
+      if(res!=SQLITE_ROW) $abort(sqlite3_errstr(res));
+
       uint64_t id=sqlite3_column_int(stmt, 0);
       uint64_t zoom=sqlite3_column_int(stmt, 1);
       uint64_t col=sqlite3_column_int(stmt, 2);
